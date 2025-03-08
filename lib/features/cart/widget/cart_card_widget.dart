@@ -7,8 +7,13 @@ class CartCardWidget extends StatefulWidget {
   final ShoesModel model;
   final bool? isShaken;
   final VoidCallback? onTap;
+  final bool isSelected;
   const CartCardWidget(
-      {super.key, required this.model, this.isShaken, this.onTap});
+      {super.key,
+      required this.model,
+      this.isShaken,
+       required this.isSelected,
+      this.onTap});
 
   @override
   State<CartCardWidget> createState() => _CartCardWidgetState();
@@ -16,7 +21,7 @@ class CartCardWidget extends StatefulWidget {
 
 class _CartCardWidgetState extends State<CartCardWidget>
     with SingleTickerProviderStateMixin {
-  bool isSelected = false;
+
   late AnimationController _controller;
   late Animation<double> _shakeAnimation;
 
@@ -60,8 +65,8 @@ class _CartCardWidgetState extends State<CartCardWidget>
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        isSelected = !isSelected;
         setState(() {});
+        widget.onTap?.call();
       },
       child: AnimatedBuilder(
         animation: _controller,
@@ -72,7 +77,7 @@ class _CartCardWidgetState extends State<CartCardWidget>
               height: 140,
               margin: const EdgeInsets.symmetric(horizontal: 12),
               decoration: BoxDecoration(
-                border: isSelected
+                border: widget.isSelected
                     ? Border.all(
                         color: Colors.black,
                         width: 2,
@@ -87,7 +92,7 @@ class _CartCardWidgetState extends State<CartCardWidget>
                 duration: Duration(milliseconds: 500),
                 builder: (BuildContext context, double value, Widget? child) =>
                     Opacity(
-                  opacity: isSelected ?? false ? value : 1,
+                  opacity: widget.isSelected ?? false ? value : 1,
                   child: Row(
                     children: [
                       SizedBox(

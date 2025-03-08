@@ -79,7 +79,11 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
     final width = MediaQuery.of(context).size.width;
-
+    final availableShoes = sampleShoeList
+        .where((shoe) => !Provider.of<HomeProvider>(context, listen: false)
+            .seletecdShoes
+            .contains(shoe))
+        .toList();
     return Scaffold(
       backgroundColor: Colors.black,
       body: Column(
@@ -285,17 +289,17 @@ class _HomeScreenState extends State<HomeScreen> {
                           padding: EdgeInsets.zero,
                           shrinkWrap: true,
                           scrollDirection: Axis.horizontal,
-                          itemCount: sampleShoeList.length,
+                          itemCount: availableShoes.length,
                           itemBuilder: (context, index) {
                             return Padding(
                               padding: EdgeInsets.symmetric(horizontal: 8),
                               child: CustomCarrView(
-                                model: sampleShoeList[index],
+                                model: availableShoes[index],
                                 onTap: () {
                                   Provider.of<HomeProvider>(context,
                                           listen: false)
-                                      .addShoes(sampleShoeList[index]);
-                                  sampleShoeList.removeAt(index);
+                                      .addShoes(availableShoes[index]);
+                                  // sampleShoeList.removeAt(index);
                                   setState(() {});
                                 },
                               ),

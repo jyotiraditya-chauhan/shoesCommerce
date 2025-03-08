@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iconly/iconly.dart';
 import 'package:provider/provider.dart';
+import 'package:shoes_app/core/empty_widget.dart';
 import 'package:shoes_app/core/shoes_model.dart';
 import 'package:shoes_app/features/cart/widget/cart_card_widget.dart';
 import 'package:shoes_app/features/home/provider/home_provider.dart';
@@ -15,6 +16,7 @@ class CartScreen extends StatefulWidget {
 
 class _CartScreenState extends State<CartScreen> {
   List<ShoesModel> seletecdShoes = [];
+  TextEditingController searchController = TextEditingController();
   bool isShaken = false;
   @override
   Widget build(BuildContext context) {
@@ -55,19 +57,22 @@ class _CartScreenState extends State<CartScreen> {
                       ),
                       GestureDetector(
                         onTap: () {
-                          setState(() {
+                          if (!isShaken) {
+                            isShaken = true;
+                            setState(() {});
+                          } else {
                             if (seletecdShoes.isNotEmpty) {
-                              print("Selected Sheos : $seletecdShoes");
                               Provider.of<HomeProvider>(context, listen: false)
                                   .seletecdShoes
                                   .removeWhere((element) {
                                 return seletecdShoes.contains(element);
                               });
                               isShaken = false;
+                              setState(() {});
                             } else {
-                              isShaken = true;
+                              isShaken = !isShaken;
                             }
-                          });
+                          }
                         },
                         child: Container(
                           height: 60,
@@ -76,7 +81,7 @@ class _CartScreenState extends State<CartScreen> {
                               shape: BoxShape.circle, color: Colors.black),
                           child: Center(
                             child: Icon(
-                              IconlyLight.delete,
+                              isShaken ? Icons.close : IconlyLight.delete,
                               color: Colors.white,
                               size: 26,
                             ),
@@ -108,6 +113,7 @@ class _CartScreenState extends State<CartScreen> {
                         SizedBox(
                           width: width * 0.7,
                           child: TextFormField(
+                            controller: searchController,
                             decoration: InputDecoration(
                               border: InputBorder.none,
                               hintText: "Search for your favorite shoes...",
@@ -118,7 +124,24 @@ class _CartScreenState extends State<CartScreen> {
                                 color: Colors.grey.shade500,
                               ),
                             ),
-                            onChanged: (value) {},
+                            onChanged: (value) {
+                              if (value.isNotEmpty) {
+                                seletecdShoes = Provider.of<HomeProvider>(
+                                        context,
+                                        listen: false)
+                                    .seletecdShoes
+                                    .where((element) => element.name
+                                        .toLowerCase()
+                                        .contains(value.toLowerCase()))
+                                    .toList();
+                              } else {
+                                // seletecdShoes.addAll(Provider.of<HomeProvider>(
+                                //         context,
+                                //         listen: false)
+                                //     .seletecdShoes);
+                              }
+                              setState(() {});
+                            },
                           ),
                         ),
                       ],
@@ -141,32 +164,59 @@ class _CartScreenState extends State<CartScreen> {
               color: Colors.white,
               borderRadius: BorderRadius.circular(30),
             ),
-            child: ListView.builder(
-              shrinkWrap: true,
-              physics: NeverScrollableScrollPhysics(),
-              padding: EdgeInsets.symmetric(vertical: 8),
-              scrollDirection: Axis.vertical,
-              itemCount: Provider.of<HomeProvider>(context, listen: false)
-                  .seletecdShoes
-                  .length,
-              itemBuilder: (context, index) {
-                return Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-                  child: CartCardWidget(
-                    onTap: () {
-                      seletecdShoes.add(
+            child: Provider.of<HomeProvider>(context, listen: false)
+                    .seletecdShoes
+                    .isEmpty
+                ? EmptyWidget(
+                    svgImage: "assets/icons/empty_shoes.svg",
+                    message: "No Shoes Found",
+                    description: "Please add some shoes to cart",
+                  )
+                : ListView.builder(
+                    shrinkWrap: true,
+                    physics: BouncingScrollPhysics(),
+                    padding: EdgeInsets.symmetric(vertical: 8),
+                    scrollDirection: Axis.vertical,
+                    itemCount: Provider.of<HomeProvider>(context, listen: false)
+                        .seletecdShoes
+                        .length,
+                    itemBuilder: (context, index) {
+                      var data =
                           Provider.of<HomeProvider>(context, listen: false)
-                              .seletecdShoes[index]);
-                      setState(() {});
-                      print(seletecdShoes);
+                              .seletecdShoes[index];
+
+                      // if (Provider.of<HomeProvider>(context, listen: false)
+                      //     .seletecdShoes
+                      //     .isEmpty) {
+                      //   return EmptyWidget(
+                      //     svgImage: "assets/icons/empty_shoes.svg",
+                      //     message: "No Shoes Found",
+                      //     description: "Please add some shoes to cart",
+                      //   );
+                      // }
+                      return Padding(
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                        child: CartCardWidget(
+                          onTap: () {
+                            if (!isShaken) return;
+                            if (seletecdShoes.contains(data)) {
+                              seletecdShoes.remove(data);
+                            } else {
+                              seletecdShoes.add(data);
+                            }
+                            setState(() {});
+                          },
+                          isShaken:
+                              isShaken == true && seletecdShoes.contains(data),
+                          model:
+                              Provider.of<HomeProvider>(context, listen: false)
+                                  .seletecdShoes[index],
+                          isSelected: seletecdShoes.contains(data),
+                        ),
+                      );
                     },
-                    isShaken: isShaken,
-                    model: Provider.of<HomeProvider>(context, listen: false)
-                        .seletecdShoes[index],
                   ),
-                );
-              },
-            ),
           ),
         ],
       ),
