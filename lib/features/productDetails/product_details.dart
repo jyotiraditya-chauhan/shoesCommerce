@@ -419,7 +419,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                               Navigator.pushReplacement(context,
                                   MaterialPageRoute(
                                 builder: (context) {
-                                  return CustomBottomAppBar();
+                                  return CartScreen();
                                 },
                               ));
                             },

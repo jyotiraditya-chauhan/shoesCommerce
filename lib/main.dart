@@ -51,8 +51,11 @@ class MainApp extends StatelessWidget {
         AppRoutes.notificationScreen: (_) => NotificationScreen(),
         AppRoutes.likeScreen: (_) => HomeScreen(),
         AppRoutes.onboardingScreen: (_) => OnboardingScreen(),
-        AppRoutes.productDetailScreen: (_) => ProductDetailsScreen(model: null,),
+        AppRoutes.productDetailScreen: (_) => ProductDetailsScreen(
+              model: null,
+            ),
       },
     );
   }
 }
+//23SCSE1180123
