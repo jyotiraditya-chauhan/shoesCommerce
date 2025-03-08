@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:shoes_app/features/bottom_app_bar/bottom_app_bar.dart';
+
 import 'package:shoes_app/features/cart/cart_screen.dart';
 import 'package:shoes_app/features/home/home_screen.dart';
 import 'package:shoes_app/features/home/provider/home_provider.dart';
 import 'package:shoes_app/features/notification/notification.dart';
 import 'package:shoes_app/features/onboarding/onboarding_screen.dart';
+import 'package:shoes_app/features/productDetails/product_details.dart';
 import 'package:shoes_app/features/profile/profile_screen.dart';
 import 'package:shoes_app/routes/router_config.dart';
 
@@ -27,9 +28,20 @@ class MainApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      theme: ThemeData.light(useMaterial3: true),
+      // theme: ThemeData.light(useMaterial3: true),
+      theme: ThemeData(
+        useMaterial3: true,
+        pageTransitionsTheme: PageTransitionsTheme(
+          builders: Map<TargetPlatform, PageTransitionsBuilder>.fromIterable(
+            TargetPlatform.values,
+            value: (dynamic _) =>
+                const FadeUpwardsPageTransitionsBuilder(), //applying old animation
+          ),
+        ),
+      ),
       darkTheme: ThemeData.dark(useMaterial3: true),
       themeMode: ThemeMode.system,
+
       // home: const CustomBottomAppBar(),
       home: const OnboardingScreen(),
       routes: {
@@ -39,6 +51,7 @@ class MainApp extends StatelessWidget {
         AppRoutes.notificationScreen: (_) => NotificationScreen(),
         AppRoutes.likeScreen: (_) => HomeScreen(),
         AppRoutes.onboardingScreen: (_) => OnboardingScreen(),
+        AppRoutes.productDetailScreen: (_) => ProductDetailsScreen(model: null,),
       },
     );
   }

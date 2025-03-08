@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iconly/iconly.dart';
@@ -279,31 +278,37 @@ class _HomeScreenState extends State<HomeScreen> {
                   if (searchController.text.isEmpty)
                     SizedBox(
                       height: 250,
-                      child: ListView.builder(
-                        scrollDirection: Axis.horizontal,
-                        itemCount: sampleShoeList.length,
-                        itemBuilder: (context, index) {
-                          return Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 8),
-                            child: CustomCarrView(
-                              model: sampleShoeList[index],
-                              onTap: () {
-                                Provider.of<HomeProvider>(context,
-                                        listen: false)
-                                    .addShoes(sampleShoeList[index]);
-                                sampleShoeList.removeAt(index);
-                                setState(() {});
-                              },
-                            ),
-                          );
-                        },
+                      child: Align(
+                        alignment: Alignment.centerLeft,
+                        child: ListView.builder(
+                          addAutomaticKeepAlives: true,
+                          padding: EdgeInsets.zero,
+                          shrinkWrap: true,
+                          scrollDirection: Axis.horizontal,
+                          itemCount: sampleShoeList.length,
+                          itemBuilder: (context, index) {
+                            return Padding(
+                              padding: EdgeInsets.symmetric(horizontal: 8),
+                              child: CustomCarrView(
+                                model: sampleShoeList[index],
+                                onTap: () {
+                                  Provider.of<HomeProvider>(context,
+                                          listen: false)
+                                      .addShoes(sampleShoeList[index]);
+                                  sampleShoeList.removeAt(index);
+                                  setState(() {});
+                                },
+                              ),
+                            );
+                          },
+                        ),
                       ),
                     ),
                   SizedBox(height: 6),
                   if (searchController.text.isEmpty)
                     Padding(
                       padding:
-                          EdgeInsets.symmetric(horizontal: 18, vertical: 18),
+                          EdgeInsets.symmetric(horizontal: 18, vertical: 10),
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -317,13 +322,19 @@ class _HomeScreenState extends State<HomeScreen> {
                               fontFamily: GoogleFonts.playfair().fontFamily,
                             ),
                           ),
-                          Text(
-                            "See all",
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.grey.shade400,
-                              fontFamily: GoogleFonts.poppins().fontFamily,
+                          GestureDetector(
+                            onTap: () {
+                              searchController.text = " ";
+                              setState(() {});
+                            },
+                            child: Text(
+                              "See all",
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.grey.shade400,
+                                fontFamily: GoogleFonts.poppins().fontFamily,
+                              ),
                             ),
                           )
                         ],

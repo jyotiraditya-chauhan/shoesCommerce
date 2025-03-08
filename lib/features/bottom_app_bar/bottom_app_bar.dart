@@ -9,7 +9,7 @@ import 'package:shoes_app/features/notification/notification.dart';
 import 'package:shoes_app/features/profile/profile_screen.dart';
 
 class CustomBottomAppBar extends StatefulWidget {
-  const CustomBottomAppBar({super.key});
+  CustomBottomAppBar({super.key});
 
   @override
   State<CustomBottomAppBar> createState() => _CustomBottomAppBarState();
@@ -38,7 +38,7 @@ class _CustomBottomAppBarState extends State<CustomBottomAppBar> {
         children: [
           Positioned(child: pages[currentIndex]),
           Positioned(
-            bottom: 6,
+            bottom: -2,
             left: 0,
             right: 0,
             child: Container(

@@ -11,8 +11,12 @@ class OnboardingScreen extends StatefulWidget {
   State<OnboardingScreen> createState() => _OnboardingScreenState();
 }
 
-class _OnboardingScreenState extends State<OnboardingScreen> {
+class _OnboardingScreenState extends State<OnboardingScreen>
+    with SingleTickerProviderStateMixin {
   int selectedIndex = 0;
+  late AnimationController _fadeController;
+  late Animation<double> _fadeAnimation;
+
   List<Map<String, dynamic>> onboardingList = [
     {
       "image": AppConstants.onboardingImage1,
@@ -33,6 +37,41 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           "Get the latest fashion insights and shoe trends delivered to you, ensuring you’re always one step ahead in style."
     },
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    // Initialize AnimationController
+    _fadeController = AnimationController(
+      duration: const Duration(milliseconds: 500),
+      vsync: this,
+    );
+
+    // Create fade animation from 0 to 1
+    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: _fadeController, curve: Curves.easeInOut),
+    );
+
+    // Start the animation initially
+    _fadeController.forward();
+  }
+
+  @override
+  void dispose() {
+    _fadeController.dispose();
+    super.dispose();
+  }
+
+  // Function to trigger fade animation on index change
+  void _changeIndex(int newIndex) {
+    setState(() {
+      selectedIndex = newIndex;
+      // Reset and replay the animation
+      _fadeController.reset();
+      _fadeController.forward();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
@@ -42,21 +81,21 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       backgroundColor: Colors.black,
       body: Column(
         children: [
-          SizedBox(
-            height: 4,
-          ),
+          const SizedBox(height: 4),
           Container(
-            margin: EdgeInsets.symmetric(horizontal: 8),
+            margin: const EdgeInsets.symmetric(horizontal: 8),
             width: double.infinity,
             clipBehavior: Clip.antiAlias,
             height: height * 0.6,
-            decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.only(
-                    topRight: Radius.circular(50),
-                    topLeft: Radius.circular(50),
-                    bottomLeft: Radius.circular(20),
-                    bottomRight: Radius.circular(20))),
+            decoration: const BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.only(
+                topRight: Radius.circular(50),
+                topLeft: Radius.circular(50),
+                bottomLeft: Radius.circular(20),
+                bottomRight: Radius.circular(20),
+              ),
+            ),
             child: Stack(
               children: [
                 Positioned(
@@ -64,29 +103,33 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   bottom: 0,
                   left: 0,
                   right: 0,
-                  child: Image.asset(
-                    fit: BoxFit.cover,
-                    onboardingList[selectedIndex]["image"],
+                  child: FadeTransition(
+                    opacity: _fadeAnimation,
+                    child: Image.asset(
+                      fit: BoxFit.cover,
+                      onboardingList[selectedIndex]["image"],
+                    ),
                   ),
                 ),
                 Positioned(
                   top: 50,
                   left: 20,
-                  child: Image.asset(
-                    AppConstants.appLogo,
-                    color: selectedIndex == 2 ? Colors.white : null,
-                    height: 60,
-                    width: 120,
+                  child: FadeTransition(
+                    opacity: _fadeAnimation,
+                    child: Image.asset(
+                      AppConstants.appLogo,
+                      color: selectedIndex == 2 ? Colors.white : null,
+                      height: 60,
+                      width: 120,
+                    ),
                   ),
                 ),
               ],
             ),
           ),
-          SizedBox(
-            height: 10,
-          ),
+          const SizedBox(height: 10),
           Container(
-            margin: EdgeInsets.symmetric(horizontal: 8),
+            margin: const EdgeInsets.symmetric(horizontal: 8),
             height: 230,
             width: double.infinity,
             decoration: BoxDecoration(
@@ -97,48 +140,53 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               padding: const EdgeInsets.all(8.0),
               child: Column(
                 children: [
-                  Text(onboardingList[selectedIndex]["title"],
+                  FadeTransition(
+                    opacity: _fadeAnimation,
+                    child: Text(
+                      onboardingList[selectedIndex]["title"],
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         fontSize: 22,
                         fontWeight: FontWeight.bold,
                         fontFamily: GoogleFonts.notable().fontFamily,
-                      )),
-                  SizedBox(
-                    height: 20,
+                      ),
+                    ),
                   ),
-                  Text(onboardingList[selectedIndex]["description"],
+                  const SizedBox(height: 20),
+                  FadeTransition(
+                    opacity: _fadeAnimation,
+                    child: Text(
+                      onboardingList[selectedIndex]["description"],
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         fontSize: 18,
                         color: Colors.black38,
                         fontWeight: FontWeight.w400,
                         fontFamily: GoogleFonts.roboto().fontFamily,
-                      ))
+                      ),
+                    ),
+                  ),
                 ],
               ),
             ),
           ),
-          SizedBox(
-            height: 10,
-          ),
+          const SizedBox(height: 10),
           Container(
-            margin: EdgeInsets.symmetric(horizontal: 8),
+            margin: const EdgeInsets.symmetric(horizontal: 8),
             height: 125,
-            decoration: BoxDecoration(
+            decoration: const BoxDecoration(
               borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(20),
-                  topRight: Radius.circular(20),
-                  bottomLeft: Radius.circular(70),
-                  bottomRight: Radius.circular(70)),
+                topLeft: Radius.circular(20),
+                topRight: Radius.circular(20),
+                bottomLeft: Radius.circular(70),
+                bottomRight: Radius.circular(70),
+              ),
               color: Colors.white,
             ),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                SizedBox(
-                  width: 30,
-                ),
+                const SizedBox(width: 30),
                 selectedIndex == 0
                     ? Text(
                         "Next",
@@ -151,15 +199,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     : GestureDetector(
                         onTap: () {
                           if (selectedIndex > 0 && selectedIndex < 3) {
-                            setState(() {
-                              selectedIndex--;
-                            });
-                          } else {
-                            // Navigator.push(
-                            //     context,
-                            //     MaterialPageRoute(
-                            //       builder: (context) => CustomBottomAppBar(),
-                            //     ));
+                            _changeIndex(selectedIndex - 1);
                           }
                         },
                         child: Container(
@@ -169,33 +209,34 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                             color: Colors.grey.shade300,
                             borderRadius: BorderRadius.circular(20),
                           ),
-                          child: Center(
-                              child: Icon(
-                            IconlyLight.arrow_left,
-                            size: 24,
-                          )),
+                          child: const Center(
+                            child: Icon(
+                              IconlyLight.arrow_left,
+                              size: 24,
+                            ),
+                          ),
                         ),
                       ),
-                Spacer(),
+                const Spacer(),
                 Image.asset(
                   AppConstants.appLogo,
                   color: Colors.grey.shade300,
                   height: 60,
                   width: 120,
                 ),
-                Spacer(),
+                const Spacer(),
                 GestureDetector(
                   onTap: () {
                     if (selectedIndex < onboardingList.length - 1) {
-                      setState(() {
-                        selectedIndex++;
-                      });
+                      _changeIndex(selectedIndex + 1);
                     } else {
                       Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => CustomBottomAppBar(),
-                          ));
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => CustomBottomAppBar(
+                          ),
+                        ),
+                      );
                     }
                   },
                   child: Container(
@@ -205,16 +246,15 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                       color: Colors.grey.shade300,
                       borderRadius: BorderRadius.circular(20),
                     ),
-                    child: Center(
-                        child: Icon(
-                      IconlyLight.arrow_right,
-                      size: 24,
-                    )),
+                    child: const Center(
+                      child: Icon(
+                        IconlyLight.arrow_right,
+                        size: 24,
+                      ),
+                    ),
                   ),
                 ),
-                SizedBox(
-                  width: 30,
-                )
+                const SizedBox(width: 30),
               ],
             ),
           ),
