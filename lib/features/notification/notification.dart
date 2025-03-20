@@ -1,11 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:iconly/iconly.dart';
 import 'package:provider/provider.dart';
 import 'package:shoes_app/core/empty_widget.dart';
-import 'package:shoes_app/core/shoes_model.dart';
-import 'package:shoes_app/features/cart/widget/cart_card_widget.dart';
 import 'package:shoes_app/features/home/provider/home_provider.dart';
 
 class NotificationScreen extends StatefulWidget {
