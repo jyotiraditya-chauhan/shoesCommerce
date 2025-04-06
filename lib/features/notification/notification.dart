@@ -1,9 +1,12 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:provider/provider.dart';
+
+import 'package:shoes_app/core/data/notification_sampleData.dart';
 import 'package:shoes_app/core/empty_widget.dart';
-import 'package:shoes_app/features/home/provider/home_provider.dart';
+import 'package:shoes_app/core/models/notification_model.dart';
+import 'package:shoes_app/features/notification/widget.dart';
+// Import the notification card - make sure to create this file
 
 class NotificationScreen extends StatefulWidget {
   const NotificationScreen({super.key});
@@ -14,6 +17,39 @@ class NotificationScreen extends StatefulWidget {
 
 class _NotificationScreenState extends State<NotificationScreen> {
   bool notificationEnable = false;
+  late List<NotificationModel> notifications;
+
+  @override
+  void initState() {
+    super.initState();
+    // Initialize with sample notifications
+    notifications = getSampleNotifications();
+  }
+
+  void _markAsRead(String notificationId) {
+    setState(() {
+      final index = notifications.indexWhere((n) => n.id == notificationId);
+      if (index != -1) {
+        final updatedNotification = NotificationModel(
+          id: notifications[index].id,
+          title: notifications[index].title,
+          message: notifications[index].message,
+          imageUrl: notifications[index].imageUrl,
+          time: notifications[index].time,
+          type: notifications[index].type,
+          isRead: true,
+        );
+        notifications[index] = updatedNotification;
+      }
+    });
+  }
+
+  void _clearNotifications() {
+    setState(() {
+      notifications.clear();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
@@ -48,11 +84,12 @@ class _NotificationScreenState extends State<NotificationScreen> {
                         "Notifications",
                         style: GoogleFonts.poppins(
                           fontSize: 24,
+                          color: Colors.black,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
                       GestureDetector(
-                        onTap: () {},
+                        onTap: _clearNotifications,
                         child: Container(
                             height: 40,
                             width: 60,
@@ -96,45 +133,49 @@ class _NotificationScreenState extends State<NotificationScreen> {
                 borderRadius: BorderRadius.circular(20),
               ),
               duration: Duration(milliseconds: 250),
-              child: Row(
-                children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      FittedBox(
-                        child: Text(
-                          "Enable Notification",
-                          style: GoogleFonts.poppins(
-                              fontSize: 20,
-                              color: Colors.green,
-                              fontWeight: FontWeight.bold),
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Row(
+                  children: [
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        FittedBox(
+                          child: Text(
+                            "Enable Notification",
+                            style: GoogleFonts.poppins(
+                                fontSize: 18,
+                                color: Colors.green,
+                                fontWeight: FontWeight.w400),
+                          ),
                         ),
-                      ),
-                      FittedBox(
-                        child: Text(
-                          "Get notified when new\nshoes are available",
-                          style: GoogleFonts.poppins(
-                              fontSize: 16,
-                              color: Colors.grey.withAlpha(160),
-                              fontWeight: FontWeight.w400),
+                        FittedBox(
+                          child: Text(
+                            "Get notified when new\nshoes are available",
+                            style: GoogleFonts.poppins(
+                                fontSize: 12,
+                                color: Colors.grey.withAlpha(160),
+                                fontWeight: FontWeight.w400),
+                          ),
                         ),
-                      ),
-                    ],
-                  ),
-                  Spacer(),
-                  FittedBox(
-                    child: CupertinoSwitch(
-                      value: notificationEnable,
-                      onChanged: (value) {
-                        notificationEnable = !notificationEnable;
-                        setState(() {});
-                      },
+                      ],
                     ),
-                  ),
-                  SizedBox(
-                    width: 20,
-                  ),
-                ],
+                    Spacer(),
+                    FittedBox(
+                      child: CupertinoSwitch(
+                        value: notificationEnable,
+                        onChanged: (value) {
+                          setState(() {
+                            notificationEnable = value;
+                          });
+                        },
+                      ),
+                    ),
+                    SizedBox(
+                      width: 20,
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
@@ -144,40 +185,37 @@ class _NotificationScreenState extends State<NotificationScreen> {
           Container(
             margin: EdgeInsets.symmetric(horizontal: 8),
             height: MediaQuery.sizeOf(context).height * 0.65,
+            clipBehavior: Clip.antiAlias,
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(30),
             ),
-            child: Provider.of<HomeProvider>(context, listen: false)
-                    .seletecdShoes
-                    .isEmpty
+            child: notifications.isEmpty
                 ? EmptyWidget(
-                    svgImage: "assets/icons/empty_shoes.svg",
-                    message: "No Shoes Found",
-                    description: "Please add some shoes to cart",
+                    svgImage: "assets/icons/empty_bell.svg",
+                    message: "No Notifications",
+                    description: "You don't have any notifications yet",
                   )
                 : ListView.builder(
                     shrinkWrap: true,
                     physics: BouncingScrollPhysics(),
-                    padding: EdgeInsets.symmetric(vertical: 8),
+                    padding: EdgeInsets.symmetric(vertical: 20),
                     scrollDirection: Axis.vertical,
-                    itemCount: Provider.of<HomeProvider>(context, listen: false)
-                        .seletecdShoes
-                        .length,
+                    itemCount: notifications.length,
                     itemBuilder: (context, index) {
-                      var data =
-                          Provider.of<HomeProvider>(context, listen: false)
-                              .seletecdShoes[index];
-
-                      // if (Provider.of<HomeProvider>(context, listen: false)
-                      //     .seletecdShoes
-                      //     .isEmpty) {
-                      //   return EmptyWidget(
-                      //     svgImage: "assets/icons/empty_shoes.svg",
-                      //     message: "No Shoes Found",
-                      //     description: "Please add some shoes to cart",
-                      //   );
-                      // }
+                      return NotificationCard(
+                        notification: notifications[index],
+                        onTap: () {
+                          _markAsRead(notifications[index].id);
+                          // Navigate to relevant screen based on notification type
+                          // For example:
+                          // if (notifications[index].type == NotificationType.newArrival) {
+                          //   Navigator.push(context, MaterialPageRoute(
+                          //     builder: (context) => ProductDetailsScreen(model: relatedShoe),
+                          //   ));
+                          // }
+                        },
+                      );
                     },
                   ),
           ),

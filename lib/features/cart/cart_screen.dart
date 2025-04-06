@@ -52,6 +52,7 @@ class _CartScreenState extends State<CartScreen> {
                         "Your Cart",
                         style: GoogleFonts.poppins(
                           fontSize: 24,
+                          color: Colors.black,
                           fontWeight: FontWeight.bold,
                         ),
                       ),

@@ -3,7 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:iconly/iconly.dart';
 import 'package:provider/provider.dart';
 import 'package:shoes_app/core/app_constants.dart';
-import 'package:shoes_app/core/data.dart';
+import 'package:shoes_app/core/data/data.dart';
 import 'package:shoes_app/core/shoes_model.dart';
 import 'package:shoes_app/features/home/provider/home_provider.dart';
 import 'package:shoes_app/features/home/widgets/custom_card.dart';

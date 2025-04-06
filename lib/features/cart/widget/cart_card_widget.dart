@@ -12,7 +12,7 @@ class CartCardWidget extends StatefulWidget {
       {super.key,
       required this.model,
       this.isShaken,
-       required this.isSelected,
+      required this.isSelected,
       this.onTap});
 
   @override
@@ -21,7 +21,6 @@ class CartCardWidget extends StatefulWidget {
 
 class _CartCardWidgetState extends State<CartCardWidget>
     with SingleTickerProviderStateMixin {
-
   late AnimationController _controller;
   late Animation<double> _shakeAnimation;
 
@@ -121,6 +120,7 @@ class _CartCardWidgetState extends State<CartCardWidget>
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
                                     style: TextStyle(
+                                      color: Colors.black,
                                       fontSize: 24,
                                       fontWeight: FontWeight.bold,
                                       fontFamily:
@@ -131,6 +131,7 @@ class _CartCardWidgetState extends State<CartCardWidget>
                                   Text(
                                     "\$${widget.model.price}",
                                     style: TextStyle(
+                                      color: Colors.black,
                                       fontSize: 20,
                                       fontWeight: FontWeight.bold,
                                       fontFamily:

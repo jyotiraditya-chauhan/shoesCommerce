@@ -3,10 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:iconly/iconly.dart';
 import 'package:provider/provider.dart';
 import 'package:shoes_app/core/app_constants.dart';
-import 'package:shoes_app/core/data.dart';
 import 'package:shoes_app/core/shoes_model.dart';
-import 'package:shoes_app/core/snakeBar.dart';
-import 'package:shoes_app/features/bottom_app_bar/bottom_app_bar.dart';
 import 'package:shoes_app/features/cart/cart_screen.dart';
 import 'package:shoes_app/features/home/provider/home_provider.dart';
 import 'package:shoes_app/features/productDetails/widgets/size_widget.dart';
@@ -21,6 +18,20 @@ class ProductDetailsScreen extends StatefulWidget {
 
 class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
   int selectedSize = 0;
+  late bool shoesAdded;
+
+  @override
+  void initState() {
+    super.initState();
+    // shoesAdded = sampleShoeList
+    //         .indexWhere((element) => element.id == widget.model?.id) !=
+    //     -1;
+    final homeProvider = Provider.of<HomeProvider>(context, listen: false);
+    shoesAdded =
+        homeProvider.seletecdShoes.any((shoe) => shoe.id == widget.model?.id);
+    print(shoesAdded);
+  }
+
   @override
   Widget build(BuildContext context) {
     final model = widget.model!;
@@ -200,7 +211,9 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                     padding: EdgeInsets.only(left: 8),
                     child: Text("Available Sizes",
                         style: GoogleFonts.poppins(
-                            fontSize: 16, fontWeight: FontWeight.w600)),
+                            color: Colors.grey.shade300,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600)),
                   ),
                   SizedBox(
                     height: 10,
@@ -263,6 +276,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                     Text(
                         "The Nike Air Max 270 React ENG combines a full-length React foam midsole with a 270 Max Air unit for unrivaled comfort and a striking visual experience. The shoe's upper features lightweight, layered materials for a modern aesthetic that stands out. The foam midsole feels soft and springy. The 270 Max Air unit provides unrivaled, all-day comfort. The shoe's upper features lightweight, layered no-sew materials for a modern look that's durable and comfortable. The foam midsole feels soft and springy. The 270 Max Air unit provides unrivaled, all-day comfort. The shoe's upper features lightweight, layered no-sew materials for a modern look that's durable and comfortable.",
                         style: GoogleFonts.poppins(
+                          color: Colors.black,
                           fontSize: 12,
                           fontWeight: FontWeight.w300,
                         )),
@@ -371,7 +385,10 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                             style: TextStyle(
                                 color: Colors.red,
                                 shadows: [
-                                  Shadow(color: Colors.red, blurRadius: 20)
+                                  Shadow(
+                                    color: Colors.red.withOpacity(0.7),
+                                    blurRadius: 30,
+                                  )
                                 ],
                                 fontWeight: FontWeight.bold,
                                 fontSize: 16),
@@ -389,60 +406,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                       ),
                     ),
                     Spacer(),
-                    GestureDetector(
-                      onTap: () {
-                        int index = sampleShoeList
-                            .indexWhere((element) => element.id == model.id);
-
-                        if (index == -1) {
-                          showSnakeBar(context, "Alreadt Added", Colors.red);
-                          return;
-                        }
-                        Provider.of<HomeProvider>(context, listen: false)
-                            .addShoes(sampleShoeList[index]);
-                        sampleShoeList.removeAt(index);
-                        // showSnakeBar(context, "Added to Cart", Colors.black);
-                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                          backgroundColor: Colors.black,
-                          content: Text(
-                            "Added to Cart",
-                            style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white),
-                          ),
-                          action: SnackBarAction(
-                            label: "View Cart",
-                            textColor: Colors.white,
-                            backgroundColor: Colors.black,
-                            onPressed: () {
-                              Navigator.pushReplacement(context,
-                                  MaterialPageRoute(
-                                builder: (context) {
-                                  return CartScreen();
-                                },
-                              ));
-                            },
-                          ),
-                        ));
-
-                        setState(() {});
-                      },
-                      child: Container(
-                        height: 60,
-                        decoration: BoxDecoration(
-                          color: Colors.black,
-                          borderRadius: BorderRadius.circular(600),
-                        ),
-                        child: Center(
-                          child: Text("Add to Cart",
-                              style: GoogleFonts.poppins(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w600,
-                                  color: Colors.white)),
-                        ),
-                      ),
-                    ),
+                    _buildCartButton(),
                     SizedBox(
                       height: 10,
                     ),
@@ -457,5 +421,127 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
         ),
       ),
     );
+  }
+
+  Widget _buildCartButton() {
+    final homeProvider = Provider.of<HomeProvider>(context, listen: false);
+    final model = widget.model!;
+
+    if (!shoesAdded) {
+      // Add to Cart button
+      return GestureDetector(
+        onTap: () {
+          // Add the shoe to the cart
+          homeProvider.addShoes(model);
+
+          // Show confirmation to the user
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            backgroundColor: Colors.black,
+            content: Text(
+              "Added to Cart",
+              style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white),
+            ),
+            action: SnackBarAction(
+              label: "View Cart",
+              textColor: Colors.white,
+              backgroundColor: Colors.black,
+              onPressed: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => CartScreen(),
+                    ));
+              },
+            ),
+          ));
+
+          // Update the UI state
+          setState(() {
+            shoesAdded = true;
+          });
+        },
+        child: Container(
+          height: 60,
+          decoration: BoxDecoration(
+            color: Colors.black,
+            borderRadius: BorderRadius.circular(600),
+          ),
+          child: Center(
+            child: Text("Add to Cart",
+                style: GoogleFonts.poppins(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.white)),
+          ),
+        ),
+      );
+    } else {
+      // Remove from Cart button
+      return GestureDetector(
+        onTap: () {
+          // Find the shoe in the cart and remove it
+          final shoeInCart = homeProvider.seletecdShoes
+              .firstWhere((shoe) => shoe.id == model.id, orElse: () => model);
+
+          homeProvider.removeShoes(shoeInCart);
+
+          // Show confirmation to the user
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            backgroundColor: Colors.black,
+            content: Text(
+              "Removed from Cart",
+              style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white),
+            ),
+            action: SnackBarAction(
+              label: "View Cart",
+              textColor: Colors.white,
+              backgroundColor: Colors.black,
+              onPressed: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => CartScreen(),
+                    ));
+              },
+            ),
+          ));
+
+          // Update the UI state
+          setState(() {
+            shoesAdded = false;
+          });
+        },
+        child: Container(
+          width: double.infinity,
+          height: 60,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            border: Border.all(color: Colors.red),
+            borderRadius: BorderRadius.circular(600),
+          ),
+          child: Center(
+            child: Text(
+              "Remove from Cart",
+              style: TextStyle(
+                  color: Colors.red,
+                  shadows: [
+                    Shadow(
+                      color: Colors.red.withOpacity(0.7),
+                      blurRadius: 30,
+                    )
+                  ],
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16),
+            ),
+          ),
+        ),
+      );
+    }
   }
 }

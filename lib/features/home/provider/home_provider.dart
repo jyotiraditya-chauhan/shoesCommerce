@@ -9,6 +9,13 @@ class HomeProvider extends ChangeNotifier {
   
   void addShoes(ShoesModel model) {
     seletecdShoes.add(model);
+  
+    notifyListeners();
+  }
+
+  void removeShoes(ShoesModel model) {
+    seletecdShoes.remove(model);
+  
     notifyListeners();
   }
 }

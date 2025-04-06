@@ -64,6 +64,7 @@ class _CustomCarrViewState extends State<CustomCarrView> {
                     widget.model.name,
                     style: TextStyle(
                       fontSize: 16,
+                      color: Colors.black,
                       fontWeight: FontWeight.bold,
                       fontFamily: GoogleFonts.poppins().fontFamily,
                     ),

@@ -59,6 +59,7 @@ class _NewArrivalsViewState extends State<NewArrivalsView> {
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: TextStyle(
+                            color: Colors.black,
                             fontSize: 24,
                             fontWeight: FontWeight.bold,
                             fontFamily: GoogleFonts.poppins().fontFamily,
@@ -70,6 +71,7 @@ class _NewArrivalsViewState extends State<NewArrivalsView> {
                         Text(
                           "\$${widget.model.price}",
                           style: TextStyle(
+                            color: Colors.black,
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
                             fontFamily: GoogleFonts.montserrat().fontFamily,

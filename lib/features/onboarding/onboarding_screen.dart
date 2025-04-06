@@ -146,6 +146,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                       onboardingList[selectedIndex]["title"],
                       textAlign: TextAlign.center,
                       style: TextStyle(
+                        color: Colors.black,
                         fontSize: 22,
                         fontWeight: FontWeight.bold,
                         fontFamily: GoogleFonts.notable().fontFamily,
@@ -193,6 +194,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                         style: TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
+                          color: Colors.black,
                           fontFamily: GoogleFonts.roboto().fontFamily,
                         ),
                       )
@@ -206,11 +208,13 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                           height: 50,
                           width: 50,
                           decoration: BoxDecoration(
-                            color: Colors.grey.shade300,
+                            // color: Colors.grey.shade300,
+                            color: Colors.black,
                             borderRadius: BorderRadius.circular(20),
                           ),
                           child: const Center(
                             child: Icon(
+                              color: Colors.white,
                               IconlyLight.arrow_left,
                               size: 24,
                             ),
@@ -220,7 +224,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                 const Spacer(),
                 Image.asset(
                   AppConstants.appLogo,
-                  color: Colors.grey.shade300,
+                  color: Colors.grey.shade500,
                   height: 60,
                   width: 120,
                 ),
@@ -233,8 +237,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => CustomBottomAppBar(
-                          ),
+                          builder: (context) => CustomBottomAppBar(),
                         ),
                       );
                     }
@@ -243,11 +246,13 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                     height: 50,
                     width: 50,
                     decoration: BoxDecoration(
-                      color: Colors.grey.shade300,
+                      // color: Colors.grey.shade300,
+                      color: Colors.black,
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: const Center(
                       child: Icon(
+                        color: Colors.white,
                         IconlyLight.arrow_right,
                         size: 24,
                       ),
