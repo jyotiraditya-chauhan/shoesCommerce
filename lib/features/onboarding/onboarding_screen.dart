@@ -16,6 +16,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
   int selectedIndex = 0;
   late AnimationController _fadeController;
   late Animation<double> _fadeAnimation;
+  late PageController pageController;
 
   List<Map<String, dynamic>> onboardingList = [
     {
@@ -34,13 +35,16 @@ class _OnboardingScreenState extends State<OnboardingScreen>
       "image": AppConstants.onboardingImage3,
       "title": "Stay Ahead with Fashion Updates",
       "description":
-          "Get the latest fashion insights and shoe trends delivered to you, ensuring you’re always one step ahead in style."
+          "Get the latest fashion insights and shoe trends delivered to you, ensuring you're always one step ahead in style."
     },
   ];
 
   @override
   void initState() {
     super.initState();
+    // Initialize PageController
+    pageController = PageController(initialPage: 0);
+
     // Initialize AnimationController
     _fadeController = AnimationController(
       duration: const Duration(milliseconds: 500),
@@ -59,17 +63,26 @@ class _OnboardingScreenState extends State<OnboardingScreen>
   @override
   void dispose() {
     _fadeController.dispose();
+    pageController.dispose();
     super.dispose();
   }
 
-  // Function to trigger fade animation on index change
   void _changeIndex(int newIndex) {
     setState(() {
       selectedIndex = newIndex;
-      // Reset and replay the animation
-      _fadeController.reset();
-      _fadeController.forward();
     });
+
+    // Only animate page if the controller is attached to the PageView
+    if (pageController.hasClients) {
+      pageController.animateToPage(
+        newIndex,
+        duration: const Duration(milliseconds: 350),
+        curve: Curves.easeIn,
+      );
+    }
+
+    _fadeController.reset();
+    _fadeController.forward();
   }
 
   @override
@@ -82,49 +95,64 @@ class _OnboardingScreenState extends State<OnboardingScreen>
       body: Column(
         children: [
           const SizedBox(height: 4),
-          Container(
-            margin: const EdgeInsets.symmetric(horizontal: 8),
-            width: double.infinity,
-            clipBehavior: Clip.antiAlias,
-            height: height * 0.6,
-            decoration: const BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.only(
-                topRight: Radius.circular(50),
-                topLeft: Radius.circular(50),
-                bottomLeft: Radius.circular(20),
-                bottomRight: Radius.circular(20),
-              ),
-            ),
-            child: Stack(
-              children: [
-                Positioned(
-                  top: 0,
-                  bottom: 0,
-                  left: 0,
-                  right: 0,
-                  child: FadeTransition(
-                    opacity: _fadeAnimation,
-                    child: Image.asset(
-                      fit: BoxFit.cover,
-                      onboardingList[selectedIndex]["image"],
+          Expanded(
+            child: PageView.builder(
+              controller: pageController,
+              onPageChanged: (index) {
+                setState(() {
+                  selectedIndex = index;
+                  _fadeController.reset();
+                  _fadeController.forward();
+                });
+              },
+              itemCount: onboardingList.length,
+              itemBuilder: (context, index) {
+                return Container(
+                  margin: const EdgeInsets.symmetric(horizontal: 8),
+                  width: double.infinity,
+                  clipBehavior: Clip.antiAlias,
+                  height: height * 0.6,
+                  decoration: const BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.only(
+                      topRight: Radius.circular(50),
+                      topLeft: Radius.circular(50),
+                      bottomLeft: Radius.circular(20),
+                      bottomRight: Radius.circular(20),
                     ),
                   ),
-                ),
-                Positioned(
-                  top: 50,
-                  left: 20,
-                  child: FadeTransition(
-                    opacity: _fadeAnimation,
-                    child: Image.asset(
-                      AppConstants.appLogo,
-                      color: selectedIndex == 2 ? Colors.white : null,
-                      height: 60,
-                      width: 120,
-                    ),
+                  child: Stack(
+                    children: [
+                      Positioned(
+                        top: 0,
+                        bottom: 0,
+                        left: 0,
+                        right: 0,
+                        child: FadeTransition(
+                          opacity: _fadeAnimation,
+                          child: Image.asset(
+                            fit: BoxFit.cover,
+                            onboardingList[index]["image"],
+                          ),
+                        ),
+                      ),
+                      Positioned(
+                        top: 50,
+                        left: 20,
+                        child: FadeTransition(
+                          opacity: _fadeAnimation,
+                          child: Image.asset(
+                            AppConstants.appLogo,
+                            color: index == 2 ? Colors.white : null,
+                            height: 60,
+                            width: 120,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                ),
-              ],
+                );
+              },
             ),
           ),
           const SizedBox(height: 10),
@@ -134,7 +162,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
             width: double.infinity,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(30),
-              color: Color(0xffFEE78E),
+              color: const Color(0xffFEE78E),
             ),
             child: Padding(
               padding: const EdgeInsets.all(8.0),
@@ -200,7 +228,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                       )
                     : GestureDetector(
                         onTap: () {
-                          if (selectedIndex > 0 && selectedIndex < 3) {
+                          if (selectedIndex > 0) {
                             _changeIndex(selectedIndex - 1);
                           }
                         },
@@ -208,14 +236,13 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                           height: 50,
                           width: 50,
                           decoration: BoxDecoration(
-                            // color: Colors.grey.shade300,
                             color: Colors.black,
                             borderRadius: BorderRadius.circular(20),
                           ),
                           child: const Center(
                             child: Icon(
-                              color: Colors.white,
                               IconlyLight.arrow_left,
+                              color: Colors.white,
                               size: 24,
                             ),
                           ),
@@ -246,14 +273,13 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                     height: 50,
                     width: 50,
                     decoration: BoxDecoration(
-                      // color: Colors.grey.shade300,
                       color: Colors.black,
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: const Center(
                       child: Icon(
-                        color: Colors.white,
                         IconlyLight.arrow_right,
+                        color: Colors.white,
                         size: 24,
                       ),
                     ),

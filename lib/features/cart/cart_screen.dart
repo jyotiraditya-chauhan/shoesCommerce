@@ -114,6 +114,12 @@ class _CartScreenState extends State<CartScreen> {
                         SizedBox(
                           width: width * 0.7,
                           child: TextFormField(
+                            style: TextStyle(
+                              fontWeight: FontWeight.w300,
+                              fontFamily: GoogleFonts.poppins().fontFamily,
+                              fontSize: 16,
+                              color: Colors.black,
+                            ),
                             controller: searchController,
                             decoration: InputDecoration(
                               border: InputBorder.none,
