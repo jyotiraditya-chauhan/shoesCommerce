@@ -36,7 +36,7 @@ class _CustomCarrViewState extends State<CustomCarrView> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Hero(
-              tag: widget.model.id + 1.toString(),
+              tag: widget.model.id,
               child: Image.asset(
                 widget.model.imageUrl,
                 fit: BoxFit.contain,

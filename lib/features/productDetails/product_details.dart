@@ -136,9 +136,12 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                             child: SizedBox(
                                 height:
                                     MediaQuery.sizeOf(context).height * 0.25,
-                                child: Image.asset(
-                                  model.imageUrl,
-                                  fit: BoxFit.cover,
+                                child: Hero(
+                                  tag: widget.model!.id.toString(),
+                                  child: Image.asset(
+                                    model.imageUrl,
+                                    fit: BoxFit.cover,
+                                  ),
                                 )),
                           ),
                         ],

@@ -18,6 +18,9 @@ class _OnboardingScreenState extends State<OnboardingScreen>
   late Animation<double> _fadeAnimation;
   late PageController pageController;
 
+  // Track if images are already cached
+  bool _imagesCached = false;
+
   List<Map<String, dynamic>> onboardingList = [
     {
       "image": AppConstants.onboardingImage1,
@@ -45,19 +48,39 @@ class _OnboardingScreenState extends State<OnboardingScreen>
     // Initialize PageController
     pageController = PageController(initialPage: 0);
 
-    // Initialize AnimationController
+    // Initialize AnimationController with faster duration
     _fadeController = AnimationController(
-      duration: const Duration(milliseconds: 500),
+      duration: const Duration(milliseconds: 200),
       vsync: this,
     );
 
     // Create fade animation from 0 to 1
-    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(parent: _fadeController, curve: Curves.easeInOut),
+    _fadeAnimation = Tween<double>(begin: 0.7, end: 1.0).animate(
+      CurvedAnimation(parent: _fadeController, curve: Curves.easeOut),
     );
 
     // Start the animation initially
     _fadeController.forward();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Precache images only once after context is available
+    if (!_imagesCached) {
+      _precacheImages();
+      _imagesCached = true;
+    }
+  }
+
+  void _precacheImages() {
+    // Pre-cache all images to avoid loading delays
+    for (var item in onboardingList) {
+      precacheImage(AssetImage(item["image"]), context);
+    }
+
+    // Also precache logo
+    precacheImage(AssetImage(AppConstants.appLogo), context);
   }
 
   @override
@@ -77,7 +100,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
       pageController.animateToPage(
         newIndex,
         duration: const Duration(milliseconds: 350),
-        curve: Curves.easeIn,
+        curve: Curves.easeInOut,
       );
     }
 
@@ -88,7 +111,6 @@ class _OnboardingScreenState extends State<OnboardingScreen>
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
-    final width = MediaQuery.of(context).size.width;
 
     return Scaffold(
       backgroundColor: Colors.black,
@@ -123,30 +145,36 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                   ),
                   child: Stack(
                     children: [
-                      Positioned(
-                        top: 0,
-                        bottom: 0,
-                        left: 0,
-                        right: 0,
-                        child: FadeTransition(
-                          opacity: _fadeAnimation,
-                          child: Image.asset(
-                            fit: BoxFit.cover,
-                            onboardingList[index]["image"],
-                          ),
+                      // Base image - always visible
+                      Positioned.fill(
+                        child: Image.asset(
+                          onboardingList[index]["image"],
+                          fit: BoxFit.cover,
+                          gaplessPlayback: true,
                         ),
                       ),
+
+                      // Animated overlay for transitions
+                      if (index == selectedIndex)
+                        Positioned.fill(
+                          child: FadeTransition(
+                            opacity: _fadeAnimation,
+                            child: Container(
+                              color: Colors.transparent,
+                            ),
+                          ),
+                        ),
+
+                      // Logo with optimized loading
                       Positioned(
                         top: 50,
                         left: 20,
-                        child: FadeTransition(
-                          opacity: _fadeAnimation,
-                          child: Image.asset(
-                            AppConstants.appLogo,
-                            color: index == 2 ? Colors.white : null,
-                            height: 60,
-                            width: 120,
-                          ),
+                        child: Image.asset(
+                          AppConstants.appLogo,
+                          color: index == 2 ? Colors.white : null,
+                          height: 60,
+                          width: 120,
+                          gaplessPlayback: true,
                         ),
                       ),
                     ],
@@ -162,7 +190,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
             width: double.infinity,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(30),
-              color: const Color(0xffFEE78E),
+              color: Color(0xffFEE78E),
             ),
             child: Padding(
               padding: const EdgeInsets.all(8.0),
@@ -254,6 +282,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                   color: Colors.grey.shade500,
                   height: 60,
                   width: 120,
+                  gaplessPlayback: true,
                 ),
                 const Spacer(),
                 GestureDetector(

@@ -198,39 +198,46 @@ class _HomeScreenState extends State<HomeScreen> {
             height: 10,
           ),
           searchController.text.isEmpty
-              ? Container(
-                  margin: EdgeInsets.symmetric(horizontal: 8),
-                  height: getContainerHeight(),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(20),
-                    color: Color(0xffFEE78E),
-                  ),
-                  padding: EdgeInsets.symmetric(vertical: 4, horizontal: 4),
-                  child: SizedBox(
-                    width: width - width * 0.1,
-                    child: ListView.separated(
-                      scrollDirection: Axis.horizontal,
-                      physics: NeverScrollableScrollPhysics(),
-                      itemCount: companiesList.length,
-                      addAutomaticKeepAlives: true,
-                      shrinkWrap: true,
-                      itemBuilder: (context, index) {
-                        var data = companiesList[index];
-                        return ShoesBannerComponentsView(
-                          image: data,
-                          isSelected: index == selectedBrand,
-                          onTap: () {
-                            setState(() {
-                              selectedBrand = index;
-                            });
-                          },
-                        );
-                      },
-                      separatorBuilder: (BuildContext context, int index) {
-                        return SizedBox(
-                          width: 10,
-                        );
-                      },
+              ? Opacity(
+                  opacity: getContainerHeight() == 80.0
+                      ? 1.0
+                      : getContainerHeight() == 80.0
+                          ? 0.2
+                          : 1.0,
+                  child: Container(
+                    margin: EdgeInsets.symmetric(horizontal: 8),
+                    height: getContainerHeight(),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(20),
+                      color: Color(0xffFEE78E),
+                    ),
+                    padding: EdgeInsets.symmetric(vertical: 4, horizontal: 4),
+                    child: SizedBox(
+                      width: width - width * 0.1,
+                      child: ListView.separated(
+                        scrollDirection: Axis.horizontal,
+                        physics: NeverScrollableScrollPhysics(),
+                        itemCount: companiesList.length,
+                        addAutomaticKeepAlives: true,
+                        shrinkWrap: true,
+                        itemBuilder: (context, index) {
+                          var data = companiesList[index];
+                          return ShoesBannerComponentsView(
+                            image: data,
+                            isSelected: index == selectedBrand,
+                            onTap: () {
+                              setState(() {
+                                selectedBrand = index;
+                              });
+                            },
+                          );
+                        },
+                        separatorBuilder: (BuildContext context, int index) {
+                          return SizedBox(
+                            width: 10,
+                          );
+                        },
+                      ),
                     ),
                   ),
                 )
